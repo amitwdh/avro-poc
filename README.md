@@ -565,6 +565,23 @@ The date logical type represents a date within the calendar, with no reference t
 ```
 Above schema generate LocalDate type java class variable.
 
+## Generating Avro Schema from POJO definition
+Ok but wait -- you do not have to START with an Avro Schema. This module can actually generate schema for you, starting with POJO definition(s)! Here's how
+```json
+public class POJO {
+  // your typical, Jackson-compatible POJO (with or without annotations)
+}
+
+ObjectMapper mapper = new ObjectMapper(new AvroFactory());
+AvroSchemaGenerator gen = new AvroSchemaGenerator();
+mapper.acceptJsonFormatVisitor(RootType.class, gen);
+AvroSchema schemaWrapper = gen.getGeneratedSchema();
+
+org.apache.avro.Schema avroSchema = schemaWrapper.getAvroSchema();
+String asJson = avroSchema.toString(true);
+```
+So: you can generate native Avro Schema object very easily, and use that instead of hand-crafted variant. Or you can even use this method for outputting schemas to use in other processing systems; use your POJOs as origin of schemata.
+
 ## Official Documentation
 https://avro.apache.org/docs/current/gettingstartedjava.html
 https://avro.apache.org/docs/current/spec.html#preamble
